@@ -1,0 +1,14 @@
+version: '3.2'
+services:
+  app:
+    build: .
+    command: bash run.sh
+    container_name: github-to-gitlab-sync
+    environment:
+      - GITLAB_API_PRIVATE_TOKEN=${GITLAB_API_PRIVATE_TOKEN}
+      - GITLAB_URL=${GITLAB_URL:-https://gitlab.com}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITLAB_USERNAME=${GITLAB_USERNAME}
+      - GITLAB_PASSWORD=${GITLAB_PASSWORD}
+    volumes:
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
