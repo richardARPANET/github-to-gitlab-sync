@@ -1,0 +1,9 @@
+-r requirements.txt
+flake8==3.9.1
+mccabe==0.6.1
+pep8-naming==0.11.1
+pytest==7.1.2
+ipdb==0.13.7
+rope==0.18.0
+docker-compose==1.29.1
+brunette==0.2.8
