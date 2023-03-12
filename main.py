@@ -26,16 +26,13 @@ GITLAB_URL_AUTHD = GITLAB_URL.replace(
 )
 GITLAB_API_PRIVATE_TOKEN = os.environ['GITLAB_API_PRIVATE_TOKEN']
 GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
-SYNC_MAPPING = os.environ['SYNC_MAPPING']
+SYNC_CONFIG = os.environ['SYNC_CONFIG']
 github_ = Github(os.environ['GITHUB_TOKEN'])
-"""
-JawboneHealth:org/JHH,richardARPANET:user/richard,odwyersoftware:org/odwyersoftware,VeemsHQ:org/Veems
-"""
 
 
 def get_sync_mapping():
     mapping = {}
-    for item in SYNC_MAPPING.split(','):
+    for item in SYNC_CONFIG.split(','):
         source_user_or_org, dest = item.split(':')
         type_, dest_user_or_org = dest.split('/')
         mapping[source_user_or_org] = {
@@ -43,6 +40,7 @@ def get_sync_mapping():
             'type': type_,
         }
     return mapping
+
 
 class CustomGitlabList(gitlab.client.GitlabList):
     def _query(
@@ -86,8 +84,11 @@ gitlab.client.GitlabList = CustomGitlabList
 
 
 def main():
+    print('Starting')
     for item in get_sync_mapping():
+        print(f'Processing {item}')
         _process_org_or_user(item)
+    print('Done')
 
 
 def _process_org_or_user(org_or_user_name):
@@ -243,7 +244,16 @@ def _push_all_branches_to_gitlab(
     for branch in checkout_branches:
         try:
             shutil.rmtree(str(path), ignore_errors=True)
-            source_repo = Repo.clone_from(clone_url, path, branch=branch)
+            source_repo = Repo.clone_from(
+                clone_url,
+                path,
+                branch=branch,
+                env={
+                    'GIT_SSH_COMMAND': (
+                        'ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa'
+                    )
+                },
+            )
         except GitCommandError as exc:
             print(exc)
             continue
