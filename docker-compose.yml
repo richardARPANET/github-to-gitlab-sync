@@ -4,6 +4,7 @@ services:
     build: .
     command: bash run.sh
     container_name: github-to-gitlab-sync
+    restart: unless-stopped
     environment:
       - GITLAB_API_PRIVATE_TOKEN=${GITLAB_API_PRIVATE_TOKEN}
       - GITLAB_URL=${GITLAB_URL:-https://gitlab.com}
