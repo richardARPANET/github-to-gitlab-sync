@@ -287,7 +287,7 @@ def _push_all_branches_to_gitlab(
             source_repo.git.checkout(branch)
         print(f'Pushing {branch} of {clone_url} to {destination_origin.url}')
         try:
-            destination_origin.push().raise_if_error()
+            destination_origin.push(force=True).raise_if_error()
         except GitCommandError as exc:
             print(exc)
             print(f'Failed to push {branch} of {clone_url}')
